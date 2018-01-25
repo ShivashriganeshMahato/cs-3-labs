@@ -1,0 +1,5 @@
+*/.idea/*
+*.ctxt
+*.class
+*.ini
+*/out/*
