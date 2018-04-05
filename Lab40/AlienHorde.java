@@ -12,7 +12,27 @@ public class AlienHorde
 
 	public AlienHorde(int size)
 	{
-		aliens = new ArrayList<>(size);
+		this();
+		for (int i = 0; i < size; i++) {
+			Alien newAlien = new Alien();
+			int x = i % 7 * 100 + 75;
+			int y = i / 7 * newAlien.getHeight() * 10 - 700;
+			newAlien.setPos(x - newAlien.getWidth() / 2, y);
+			add(newAlien);
+		}
+	}
+
+	public AlienHorde() {
+		aliens = new ArrayList<>();
+	}
+
+	public void spawn(int speed) {
+		for (int i = 0; i < 7; i++) {
+			Alien newAlien = new Alien();
+			newAlien.setPos(i * 100 + 100 - newAlien.getWidth() / 2, -newAlien.getHeight() - 100);
+			newAlien.setSpeed(speed);
+			add(newAlien);
+		}
 	}
 
 	public void add(Alien al)
@@ -27,25 +47,38 @@ public class AlienHorde
 
 	public void moveEmAll()
 	{
+		aliens.forEach(alien -> alien.move("DOWN"));
 	}
 
-	public void removeDeadOnes(List<Ammo> shots)
+	public void update(List<Ammo> shots, Ship ship) {
+		for (Alien alien : aliens)
+			alien.damageShip(ship);
+		removeDeadOnes(shots, ship);
+	}
+
+	public void removeDeadOnes(List<Ammo> shots, Ship ship)
 	{
-		for (Ammo shot : shots) {
-			for (Alien alien : aliens) {
-				if (shot.getX() < alien.getX() + alien.getWidth() &&
-					shot.getX() + shot.getWidth() > alien.getX() &&
-	     			shot.getY() > alien.getY() + alien.getHeight() &&
-					shot.getY() + shot.getHeight() < alien.getY()) {
-						shots.remove(shot);
-						aliens.remove(alien);
-					}
+		List<Alien> toRemove = new ArrayList<>();
+		for (Alien alien : aliens) {
+			alien.kill(shots);
+			if (alien.isDead()) {
+				toRemove.add(alien);
+				ship.addScore(1);
+			}
+			else if (alien.getY() > 650) {
+				toRemove.add(alien);
+				ship.hurt(5);
 			}
 		}
+		aliens.removeAll(toRemove);
 	}
 
 	public String toString()
 	{
 		return aliens.toString();
+	}
+
+	public List<Alien> getAliens() {
+		return aliens;
 	}
 }

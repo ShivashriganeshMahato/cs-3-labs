@@ -1,12 +1,12 @@
-import java.awt.Color;
 import java.awt.Graphics;
 
 public abstract class MovingThing implements Moveable
 {
-	private int xPos;
-	private int yPos;
+	private double xPos;
+	private double yPos;
 	private int width;
 	private int height;
+	private boolean isDead;
 
 	public MovingThing()
 	{
@@ -20,6 +20,7 @@ public abstract class MovingThing implements Moveable
 
 	public MovingThing(int x, int y, int w, int h)
 	{
+		isDead = false;
 		setPos(x, y);
 		setWidth(w);
 		setHeight(h);
@@ -31,22 +32,22 @@ public abstract class MovingThing implements Moveable
 		setY(y);
 	}
 
-	public void setX(int x)
+	public void setX(double x)
 	{
 		xPos = x;
 	}
 
-	public void setY(int y)
+	public void setY(double y)
 	{
 		yPos = y;
 	}
 
-	public int getX()
+	public double getX()
 	{
 		return xPos;
 	}
 
-	public int getY()
+	public double getY()
 	{
 		return yPos;
 	}
@@ -73,6 +74,21 @@ public abstract class MovingThing implements Moveable
 
 	public abstract void move(String direction);
 	public abstract void draw(Graphics window);
+
+	public boolean isTouching(MovingThing otherThing) {
+		return otherThing.getY() + otherThing.getHeight() > getY() &&
+				otherThing.getY() < getY() + getHeight() &&
+				otherThing.getX() + otherThing.getWidth() > getX() &&
+				otherThing.getX() < getX() + getWidth();
+	}
+
+	public boolean isDead() {
+		return isDead;
+	}
+
+	public void kill() {
+		isDead = true;
+	}
 
 	public String toString()
 	{

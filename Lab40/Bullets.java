@@ -27,6 +27,11 @@ public class Bullets
 		}
 	}
 
+	public void add(Ammo al, Vector2 gotoPos) {
+		al.goTo(gotoPos);
+		add(al);
+	}
+
 	//post - draw each Ammo
 	public void drawEmAll( Graphics window )
 	{
@@ -35,11 +40,11 @@ public class Bullets
 
 	public void moveEmAll()
 	{
-		ammo.forEach(ammo -> ammo.move());
+		ammo.forEach(Ammo::move);
 	}
 
 	public void updateTimer() {
-		if (timer >= -1)
+		if (timer > -1)
 			timer++;
 		if (timer > ShootingFrameLag)
 			timer = -1;
@@ -47,7 +52,17 @@ public class Bullets
 
 	public void cleanEmUp()
 	{
-		ammo.clear();
+		List<Ammo> toRemove = new ArrayList<>();
+		ammo.forEach(_ammo -> {
+			if (_ammo.getY() < -_ammo.getHeight() || _ammo.isDead())
+				toRemove.add(_ammo);
+		});
+		ammo.removeAll(toRemove);
+	}
+
+	public void update() {
+		updateTimer();
+		cleanEmUp();
 	}
 
 	public List<Ammo> getList()
